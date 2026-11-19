@@ -11,8 +11,11 @@
 
   function formatInlineMarkdown(text) {
     return escapeHTML(text)
-      // Parse Markdown Images: ![Alt text](url)
-      .replace(/!\[([^\]]*?)\]\((.*?)\)/g, "<img src='$2' alt='$1' class='max-w-full h-auto rounded-lg my-3 border border-studio-700 shadow-md mx-auto block' />")
+      // Parse Markdown Images: ![Alt text](url) or ![Alt text](<url>)
+      .replace(/!\[([^\]]*?)\]\(<?([^)>]+?)>?\)/g, function (_match, alt, src) {
+        var cleanSrc = src.trim().replace(/&amp;/g, '&');
+        return "<img src='" + cleanSrc + "' alt='" + alt + "' class='max-w-full h-auto rounded-lg my-3 border border-studio-700 shadow-md mx-auto block' />";
+      })
       .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
       .replace(/__(.*?)__/g, '<strong class="text-white font-semibold">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
