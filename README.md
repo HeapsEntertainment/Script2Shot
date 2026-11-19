@@ -3,7 +3,7 @@ Version 1.0 | Last Updated: 16/11/2026
 
 Script2Shot is a deterministic screenplay-to-shotlist desktop studio built to accelerate pre-production for live-action, 2D animation, and 3D/CGI pipelines—with __zero AI__. Plus, Script2Shot also features _Stripboard_ generation.
 
-![App Screenshot](assets/Screenshot2026-11-16 204523.png)
+![App Screenshot](<assets/Screenshot2026-11-16 204523.png>)
 
 _All parsing and timing calculations run 100% locally on your machine with zero cloud dependencies, and don't rely on any AI models. Script2Shot generates a structured first-pass baseline in seconds, giving directors and ADs a complete framework ready for rapid fine-tuning, and can export to formats such as Excel, CSV, or JSON, depending on your needs._
 
