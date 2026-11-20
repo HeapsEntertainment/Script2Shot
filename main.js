@@ -41,9 +41,7 @@ ipcMain.handle('dialog:open-project', async (event) => {
     title: 'Open Project or Screenplay',
     properties: ['openFile'],
     filters: [
-      { name: 'Projects & Screenplays', extensions: ['s2s', 'json', 'txt', 'fountain', 'md'] },
       { name: 'Script2Shot Project (*.s2s)', extensions: ['s2s', 'json'] },
-      { name: 'Screenplay Text (*.txt, *.fountain, *.md)', extensions: ['txt', 'fountain', 'md'] }
     ]
   });
   return result.canceled || !result.filePaths.length ? null : result.filePaths[0];
