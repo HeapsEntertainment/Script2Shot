@@ -2,10 +2,13 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+app.disableHardwareAcceleration();
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    show: false,
     backgroundColor: '#111113',
     autoHideMenuBar: true,
     icon: path.join(__dirname, 's2sicon.ico'),
@@ -15,8 +18,10 @@ function createWindow() {
     }
   });
 
-  // Automatically maximize the window on launch
-  mainWindow.maximize();
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.maximize();
+  });
 
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }

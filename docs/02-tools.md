@@ -1,6 +1,8 @@
 # Toolbar
 The following documentation covers all of the tools and utilities in the main app toolbar.
 
+![App Screenshot](assets\screenshot-2026-11-19-195508.png)
+
 ## File
 Main menu for opening, saving/loading, generating, and exporting project files.
 
@@ -40,6 +42,7 @@ A button to generate shots. Useful for udating the shotlist to match the script.
 
 # Project Options Bar
 The following documentation covers all of the tools and utilities in the _Project Options Bar_.
+![App Screenshot](assets\screenshot-2026-11-19-194512.png)
 
 ## Scenes
 A counter displaying the number of scenes in the project.

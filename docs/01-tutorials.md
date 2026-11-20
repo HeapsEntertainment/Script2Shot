@@ -16,13 +16,17 @@ In a new project (_File>New File_)
 Select _Upload .txt/.fountain_.
 
 # Generating Stripboards
-Shot2Script supports generating a Stripboard - a list of scenes grouped together based on type (INT./EXT.), location, and time, in rough chronological order.
+Script2Shot supports generating a Stripboard - a list of scenes grouped together based on type (INT./EXT.), location, and time, in rough chronological order.
+> _Note: Script2Shot is primarily a shotlist tool. The generated Stripboards don't have information such as cast avilability, Shoot Day / Batch, Page Eighths (for live action), Priority, or Quick status columns (Blocked, Lit, Rendered, Notes). However, these can quickly and easily be added in a spreadsheet software program, suh as Microsoft Excel or Google Sheets._
+> _In essence, for professional workflows, soncider the Stripboards feature as a fast first-pass breakdown meant to be customized in Excel/Sheets rather than a finished scheduling system._  
 To generate a Stripboard, you will first need to have created a shotlist.
 
 ## Step 1
 Go to _File>Export Stripboard..._
 
 ## Step 2
+![App Screenshot](assets\screenshot-2026-11-19-195050.png)
+
 In the export modal, select your branding option, and choose whether you want to include shots in your stripboard (leave unchecked for traditional stripboard format).
 
 ## Step 3
