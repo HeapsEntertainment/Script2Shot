@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-script: "Courier Prime", "Courier New", Courier, monospace;
+
+  --color-studio-950: #111113;
+  --color-studio-900: #17171a;
+  --color-studio-850: #1d1d21;
+  --color-studio-800: #25252a;
+  --color-studio-700: #323239;
+  --color-studio-600: #464650;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #141417;
+}
+::-webkit-scrollbar-thumb {
+  background: #323239;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #464650;
+}
+
+/* Interactive Screenplay Typography */
+.sp-section {
+  color: #a1a1aa;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  text-align: center;
+  background: #1d1d21;
+  border-top: 1px solid #323239;
+  border-bottom: 1px solid #323239;
+  padding: 6px 12px;
+  margin: 1.4rem 0 0.9rem 0;
+  border-radius: 4px;
+}
+.sp-synopsis {
+  color: #8e8e98;
+  font-style: italic;
+  font-size: 0.82rem;
+  border-left: 2px dashed #464650;
+  padding-left: 10px;
+  margin: 0.4rem 0 0.8rem 0;
+}
+.sp-slugline {
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+  padding: 6px 10px;
+  margin: 1.2rem 0 0.75rem 0;
+  border-radius: 0 4px 4px 0;
+}
+.sp-action {
+  color: #d4d4d8;
+  margin-bottom: 0.75rem;
+  line-height: 1.55;
+}
+.sp-character {
+  color: #e4e4e7;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-left: 30%;
+  margin-top: 0.75rem;
+  margin-bottom: 0.1rem;
+}
+.sp-parenthetical {
+  color: #9ca3af;
+  font-style: italic;
+  margin-left: 22%;
+  margin-bottom: 0.1rem;
+}
+.sp-dialogue {
+  color: #fafafa;
+  margin-left: 14%;
+  margin-right: 14%;
+  margin-bottom: 0.75rem;
+  line-height: 1.48;
+}
+.sp-transition {
+  color: #a1a1aa;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: right;
+  margin: 0.75rem 0;
+}
+.cue-highlight {
+  background-color: rgba(245, 158, 11, 0.22);
+  color: #fde68a;
+  border-bottom: 1.5px solid #f59e0b;
+  border-radius: 2px;
+  padding: 0 3px;
+  font-weight: 700;
+}
+
+/* Floating Tooltip */
+#acronym-tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  max-width: 290px;
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  min-width: 175px;
+}
+.dropdown-menu-left {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 2px);
+  z-index: 60;
+}
+.dropdown-menu-left.show {
+  display: block;
+}
+
+/* Resizable Left Pane on Desktop */
+@media (min-width: 1024px) {
+  #left-pane {
+    width: var(--left-pane-width, 40%);
+  }
+  #left-pane.is-collapsed {
+    width: 0px !important;
+    min-width: 0px !important;
+    border-right-width: 0px !important;
+    overflow: hidden !important;
+  }
+}
+@media (max-width: 1023px) {
+  #left-pane.is-collapsed {
+    height: 0px !important;
+    min-height: 0px !important;
+    border-bottom-width: 0px !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Documentation Sidebar Tab Buttons */
+.doc-sidebar-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  color: #cbd5e1;
+}
+.doc-sidebar-btn:hover {
+  background-color: #27272a;
+  color: #ffffff;
+}
+.doc-sidebar-btn.active {
+  background-color: #f59e0b;
+  color: #09090b;
+}
