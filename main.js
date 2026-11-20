@@ -1,8 +1,81 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, dialog, shell } = require('electron');
+const https = require('https');
 const fs = require('fs');
+const path = require('path');
+const buildInfo = require('./build-info');
 
-app.disableHardwareAcceleration();
+const REMOTE_VERSION_URL =
+  'https://raw.githubusercontent.com/modsquadacademy/script2shot/main/version.json';
+
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, { headers: { 'User-Agent': 'Script2Shot-Updater' } }, (res) => {
+        if (res.statusCode !== 200) {
+          return reject(new Error(`HTTP ${res.statusCode}`));
+        }
+        let raw = '';
+        res.on('data', (chunk) => (raw += chunk));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(raw));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      })
+      .on('error', reject);
+  });
+}
+
+function downloadFile(url, destPath) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, { headers: { 'User-Agent': 'Script2Shot-Updater' } }, (res) => {
+        // Follow GitHub release redirects (301 / 302)
+        if ([301, 302].includes(res.statusCode) && res.headers.location) {
+          return downloadFile(res.headers.location, destPath).then(resolve).catch(reject);
+        }
+        if (res.statusCode !== 200) {
+          return reject(new Error(`Download failed: HTTP ${res.statusCode}`));
+        }
+        const file = fs.createWriteStream(destPath);
+        res.pipe(file);
+        file.on('finish', () => file.close(() => resolve(destPath)));
+      })
+      .on('error', reject);
+  });
+}
+
+async function checkForUpdate(parentWindow) {
+  if (!app.isPackaged) return;
+
+  try {
+    const remote = await fetchJson(REMOTE_VERSION_URL);
+    if (!remote.lastUpdated || remote.lastUpdated === buildInfo.lastUpdated) {
+      return;
+    }
+
+    const result = await dialog.showMessageBox(parentWindow, {
+      type: 'info',
+      title: 'Update Available',
+      message: `A newer Script2Shot build (${remote.lastUpdated}) is available.`,
+      detail: remote.notes || 'Download and run the installer now?',
+      buttons: ['Update Now', 'Later'],
+      defaultId: 0,
+      cancelId: 1
+    });
+
+    if (result.response !== 0 || !remote.installerUrl) return;
+
+    const installerPath = path.join(app.getPath('temp'), 'Script2Shot-Update.exe');
+    await downloadFile(remote.installerUrl, installerPath);
+    await shell.openPath(installerPath);
+    app.quit();
+  } catch (err) {
+    console.warn('Update check skipped:', err.message);
+  }
+}
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
