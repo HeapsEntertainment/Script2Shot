@@ -1,0 +1,9 @@
+{
+  "files": [
+    "README.md",
+    "docs/01-tutorials.md",
+    "docs/02-tools.md",
+    "docs/03-file management.md",
+    "docs/04-app integrations.md"
+  ]
+}
