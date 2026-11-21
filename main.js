@@ -6,26 +6,38 @@ const buildInfo = require('./build-info');
 
 const REMOTE_VERSION_URL =
   'https://raw.githubusercontent.com/modsquadacademy/script2shot/main/version.json';
+const GITHUB_RAW_ROOT =
+  'https://raw.githubusercontent.com/modsquadacademy/script2shot/main/';
+const USER_DOCS_DIR = path.join(app.getPath('userData'), 'docs-cache');
+const DEFAULT_DOC_PATHS = [
+  'README.md',
+  'docs/01-tutorials.md',
+  'docs/02-tools.md',
+  'docs/03-file management.md',
+  'docs/04-app integrations.md'
+];
 
-function fetchJson(url) {
+function fetchText(url) {
   return new Promise((resolve, reject) => {
     https
       .get(url, { headers: { 'User-Agent': 'Script2Shot-Updater' } }, (res) => {
+        if ([301, 302].includes(res.statusCode) && res.headers.location) {
+          return fetchText(res.headers.location).then(resolve).catch(reject);
+        }
         if (res.statusCode !== 200) {
           return reject(new Error(`HTTP ${res.statusCode}`));
         }
         let raw = '';
         res.on('data', (chunk) => (raw += chunk));
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(raw));
-          } catch (err) {
-            reject(err);
-          }
-        });
+        res.on('end', () => resolve(raw));
       })
       .on('error', reject);
   });
+}
+
+async function fetchJson(url) {
+  const raw = await fetchText(url);
+  return JSON.parse(raw);
 }
 
 function downloadFile(url, destPath) {
@@ -45,6 +57,40 @@ function downloadFile(url, destPath) {
       })
       .on('error', reject);
   });
+}
+
+async function syncDocsFromGitHub() {
+  try {
+    const manifestRaw = await fetchText(
+      `${GITHUB_RAW_ROOT}docs-manifest.json?t=${Date.now()}`
+    );
+    const manifest = JSON.parse(manifestRaw);
+    const files = Array.isArray(manifest.files) && manifest.files.length > 0
+      ? manifest.files
+      : DEFAULT_DOC_PATHS;
+
+    for (const relPath of files) {
+      const encodedPath = relPath
+        .split('/')
+        .map((part) => encodeURIComponent(part))
+        .join('/');
+
+      const content = await fetchText(`${GITHUB_RAW_ROOT}${encodedPath}?t=${Date.now()}`);
+      const localTarget = path.join(USER_DOCS_DIR, ...relPath.split('/'));
+
+      fs.mkdirSync(path.dirname(localTarget), { recursive: true });
+      fs.writeFileSync(localTarget, content, 'utf8');
+    }
+
+    fs.mkdirSync(USER_DOCS_DIR, { recursive: true });
+    fs.writeFileSync(
+      path.join(USER_DOCS_DIR, 'docs-manifest.json'),
+      JSON.stringify({ files }, null, 2),
+      'utf8'
+    );
+  } catch (err) {
+    console.warn('Docs sync skipped:', err.message);
+  }
 }
 
 async function checkForUpdate(parentWindow) {
@@ -97,7 +143,36 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  return mainWindow;
 }
+
+ipcMain.handle('load-docs', async () => {
+  await syncDocsFromGitHub();
+
+  let files = DEFAULT_DOC_PATHS;
+  const cachedManifest = path.join(USER_DOCS_DIR, 'docs-manifest.json');
+  if (fs.existsSync(cachedManifest)) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(cachedManifest, 'utf8'));
+      if (Array.isArray(parsed.files) && parsed.files.length > 0) {
+        files = parsed.files;
+      }
+    } catch (_) {}
+  }
+
+  return files.map((relPath) => {
+    const cachedFile = path.join(USER_DOCS_DIR, ...relPath.split('/'));
+    const bundledFile = path.join(__dirname, ...relPath.split('/'));
+    const chosenPath = fs.existsSync(cachedFile)
+      ? cachedFile
+      : (fs.existsSync(bundledFile) ? bundledFile : null);
+
+    return {
+      relPath,
+      content: chosenPath ? fs.readFileSync(chosenPath, 'utf8') : ''
+    };
+  });
+});
 
 // Native Save As Dialog
 ipcMain.handle('dialog:save-project', async (event, defaultName) => {
@@ -119,7 +194,7 @@ ipcMain.handle('dialog:open-project', async (event) => {
     title: 'Open Project or Screenplay',
     properties: ['openFile'],
     filters: [
-      { name: 'Script2Shot Project (*.s2s)', extensions: ['s2s', 'json'] },
+      { name: 'Script2Shot Project (*.s2s)', extensions: ['s2s', 'json'] }
     ]
   });
   return result.canceled || !result.filePaths.length ? null : result.filePaths[0];
@@ -169,11 +244,11 @@ ipcMain.handle('dialog:export-pdf', async (event, exportData) => {
       <div class="header-box">
         <div class="brand-banner">
           <h1>PRODUCTION SHOTLIST</h1>
-          <span style="font-size: 10pt; font-weight: bold; color: #b45309;">${exportData.branding.logoText || ''}</span>
+          <span style="font-size: 10pt; font-weight: bold; color: #b45309;">${branding.logoText || ''}</span>
         </div>
         <div style="font-size: 9pt; color: #475569; font-weight: 500; margin-bottom: 4px;">
-          ${exportData.branding.company ? '<strong>Studio:</strong> ' + exportData.branding.company + ' &nbsp;|&nbsp; ' : ''}
-          ${exportData.branding.tagline ? '<em>' + exportData.branding.tagline + '</em>' : ''}
+          ${branding.company ? '<strong>Studio:</strong> ' + branding.company + ' &nbsp;|&nbsp; ' : ''}
+          ${branding.tagline ? '<em>' + branding.tagline + '</em>' : ''}
         </div>
         <div class="meta">
           <span><strong>Project:</strong> ${exportData.projectTitle} (${exportData.formatLabel})</span>
@@ -229,7 +304,7 @@ ipcMain.handle('dialog:export-stripboard', async (event, exportData) => {
     title: 'Export Stripboard',
     defaultPath: exportData.defaultFileName || 'stripboard.csv',
     filters: [
-      ext === 'xls' 
+      ext === 'xls'
         ? { name: 'Excel Workbook (*.xls)', extensions: ['xls'] }
         : { name: 'CSV File (*.csv)', extensions: ['csv'] }
     ]
@@ -265,10 +340,15 @@ ipcMain.handle('dialog:export-stripboard-csv', async (event, exportData) => {
 });
 
 app.whenReady().then(() => {
-  createWindow();
+  const mainWindow = createWindow();
+  checkForUpdate(mainWindow);
+  syncDocsFromGitHub();
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      const win = createWindow();
+      checkForUpdate(win);
+    }
   });
 });
 

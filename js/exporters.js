@@ -152,36 +152,56 @@
     window.print();
   }
 
-  function loadAndRenderWipDocumentation() {
-    var docFiles = [];
+  async function loadAndRenderWipDocumentation() {
+    var docEntries = [];
 
-    if (fs && nodePath) {
-      var readmePath = nodePath.join(__dirname, 'README.md');
-      if (fs.existsSync(readmePath)) {
-        docFiles.push({ path: readmePath, label: 'Overview' });
+    if (ipcRenderer) {
+      try {
+        var syncedDocs = await ipcRenderer.invoke('load-docs');
+        if (Array.isArray(syncedDocs)) {
+          docEntries = syncedDocs.filter(function (entry) {
+            return entry && entry.relPath && typeof entry.content === 'string' && entry.content.trim().length > 0;
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to load synced docs via IPC:', err.message);
       }
+    }
 
-      var docsDir = nodePath.join(__dirname, 'docs');
-      if (fs.existsSync(docsDir)) {
-        var extraFiles = fs.readdirSync(docsDir)
-          .filter(function (f) { return f.toLowerCase().endsWith('.md'); })
-          .sort();
-        
-        extraFiles.forEach(function (f) {
-          var cleanName = f.replace(/\.[^/.]+$/, '').replace(/^[0-9]+[-_]*/, '');
-          var label = cleanName.charAt(0).toUpperCase() + cleanName.slice(1).replace(/[-_]/g, ' ');
-          docFiles.push({ path: nodePath.join(docsDir, f), label: label });
-        });
-      }
+    if (!docEntries.length && fs && nodePath) {
+      var fallbackPaths = [
+        'README.md',
+        'docs/01-tutorials.md',
+        'docs/02-tools.md',
+        'docs/03-file management.md',
+        'docs/04-app integrations.md'
+      ];
+
+      fallbackPaths.forEach(function (relPath) {
+        var fullPath = nodePath.join(__dirname, relPath);
+        if (fs.existsSync(fullPath)) {
+          docEntries.push({
+            relPath: relPath,
+            content: fs.readFileSync(fullPath, 'utf8')
+          });
+        }
+      });
     }
 
     var fileSections = [];
 
-    if (docFiles.length > 0) {
-      docFiles.forEach(function (fileObj) {
-        var content = fs.readFileSync(fileObj.path, 'utf8');
-        
-        content = content.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function (match, alt, src) {
+    if (docEntries.length > 0) {
+      docEntries.forEach(function (entry) {
+        var baseName = entry.relPath.split('/').pop();
+        var groupLabel = baseName.toLowerCase() === 'readme.md'
+          ? 'Overview'
+          : baseName
+              .replace(/\.[^/.]+$/, '')
+              .replace(/^[0-9]+[-_]*/, '')
+              .replace(/[-_]/g, ' ')
+              .replace(/^\w/, function (c) { return c.toUpperCase(); });
+
+        var content = entry.content.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function (match, alt, src) {
           return '![' + alt + '](' + src.replace(/\\/g, '/') + ')';
         });
 
@@ -195,7 +215,7 @@
           var body = lines.slice(1).join('\n');
 
           subTabs.push({
-            id: 'doc-' + fileObj.label.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + sIdx,
+            id: 'doc-' + groupLabel.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + sIdx,
             title: title || ('Section ' + (sIdx + 1)),
             content: body
           });
@@ -203,7 +223,7 @@
 
         if (subTabs.length > 0) {
           fileSections.push({
-            groupLabel: fileObj.label,
+            groupLabel: groupLabel,
             tabs: subTabs
           });
         }
