@@ -16,6 +16,14 @@
       "!dist/**/*",
       "!screenshot-*.png"
     ],
+    "fileAssociations": [
+      {
+        "ext": "s2s",
+        "name": "Script2Shot Project",
+        "description": "Script2Shot Project File",
+        "icon": "s2sicon.ico"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "s2sicon.ico"
