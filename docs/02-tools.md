@@ -26,7 +26,6 @@ Change or modify the project settings. These are the same settings as seen in th
 * __Kayboard Shortcuts:__ View and edit keyboard shortcuts.
 * __Branding Options:__ Add and edit branding options for shotlist exports.
 * __Recalculate Scene Runtimes:__ Similar funtion to the _Retime_ button.
-* __Auto-Number All Shots:__ Similar function to the _Auto-Number_ button.
 
 ## Help
 View documentation, tutorials, and other information.

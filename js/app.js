@@ -823,16 +823,6 @@ if (resHInput) resHInput.addEventListener('change', recalcFromRenderProfile);
     var btnAdvRetime = document.getElementById('btn-adv-retime');
     if (btnAdvRetime) btnAdvRetime.addEventListener('click', function () { retimeAllShots(true); });
 
-    var btnAdvRenumber = document.getElementById('btn-adv-renumber');
-    if (btnAdvRenumber) {
-      btnAdvRenumber.addEventListener('click', function () {
-        assignShotNumbers(state.shots);
-        renderShotlistTable();
-        queueAutoSave();
-        showToast('Re-numbered shots cleanly per scene.', 'info');
-      });
-    }
-
     var shortcutsModal = document.getElementById('shortcuts-modal');
     var btnMenuShortcuts = document.getElementById('btn-menu-shortcuts');
     var btnCloseShortcuts = document.getElementById('btn-close-shortcuts');
