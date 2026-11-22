@@ -5,9 +5,9 @@ const path = require('path');
 const buildInfo = require('./build-info');
 
 const REMOTE_VERSION_URL =
-  'https://raw.githubusercontent.com/modsquadacademy/script2shot/main/version.json';
+  'https://raw.githubusercontent.com/HeapsEntertainment/Script2Shot/main/version.json';
 const GITHUB_RAW_ROOT =
-  'https://raw.githubusercontent.com/modsquadacademy/script2shot/main/';
+  'https://raw.githubusercontent.com/HeapsEntertainment/Script2Shot/main/';
 const USER_DOCS_DIR = path.join(app.getPath('userData'), 'docs-cache');
 const DEFAULT_DOC_PATHS = [
   'README.md',

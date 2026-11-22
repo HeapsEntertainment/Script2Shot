@@ -1,13 +1,15 @@
 {
   "name": "script2shot",
   "version": "1.0.0",
+  "description": "Screenplay to Shotlist Studio",
+  "author": "Heaps Entertainment",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win nsis"
   },
   "build": {
-    "appId": "com.modsquadacademy.script2shot",
+    "appId": "com.heapsentertainment.script2shot",
     "productName": "Script2Shot",
     "files": [
       "**/*",
