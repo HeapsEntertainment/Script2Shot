@@ -108,4 +108,4 @@ _Note: Custom Shot Types & Custom Camera Movements are stored locally in each pr
 Script2Shot came about when we - Heaps Entertaiment - were planning an upcoming CGI series, found that sourcing a free, simple shotlist tool - that didn't rely on AI - was not easy to find or access. So, we decided to experiment and create our own tool to improve our existing workflow or relying on Microsoft Excel templates.
 We hope this tool is as useful for you as it is for us!
 
-![App Screenshot](assets\HeapsEntertainmentWide.svg)
+![App Screenshot](assets/HeapsEntertainmentWide.svg)
