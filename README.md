@@ -1,5 +1,5 @@
 # Script2Shot Official Documentation
-Version 1.0 | Documentation Last Updated: 23/11/2026
+Version 1.0.0 | Documentation Last Updated: 23/11/2026
 
 Script2Shot is a deterministic screenplay-to-shotlist desktop studio built to accelerate pre-production for live-action, 2D animation, and 3D/CGI pipelines—with __zero AI__. Plus, Script2Shot also features _Stripboard_ generation.
 
@@ -31,11 +31,11 @@ Script2Shot automatically adjusts based on any project format, from live action 
 
 Script2Shot eliminates the guesswork by automatically adjusting shot lenses based on project format and shot size/type, making projects easier for indie creators and saving time for professionals whilst still supporting individual lens adjustments to each shot if required.
 
-## Further Documetaion
-Script2Shot has extensive documentation, which can be accessed in-app. Further/additoional documentation can be found on the github wiki.
+## Further Documnetation
+Script2Shot has extensive documentation, which can be accessed in-app. Further/additional documentation can be found on the github wiki at https://github.com/HeapsEntertainment/Script2Shot/wiki.
 
 # How to Get Started
-Script2Shot is designed to be easy and intuative to use, with many automatic features. It is also fully documented in-app, with tutorial guides and epxlanations for every setting. You might even be reading this within the app.
+Script2Shot is designed to be easy and intuative to use, with many automatic features. It is also fully documented in-app, with tutorial guides and explainations for every setting. You might even be reading this within the app.
 
 ## Professional Workflow Intergration
 If you are an industry professional, or use professional workflows, see the _Professional Workflow Intergration_ page, and the _App Integrations_ page to learn how to add Script2Shot to your pre-production pipeline alongside other exisitng software tools. For a breakdown of the features that improve industry workflow, see _Specialist Features_. 
@@ -102,3 +102,10 @@ _Note: Custom Shot Types & Custom Camera Movements are stored locally in each pr
 * Structured Stripboard Exports: Export stripboards sorted by scene type (INT. / EXT.), location, and time of day in .csv or .xls format.
 * Hybrid Stripboard Mode: Option to include individual shots organized by location rather than scene headers alone, bridging shot planning and schedule prep.
 * Multi-Format Handoffs & Branding: Export to Excel (.xls) and CSV (.csv) for collaborative refinement in Microsoft Excel or Google Sheets, JSON for data exchange, or A4 landscape PDF for print-ready reviews—complete with multiple Branding Packs and watermarking for file versioning.
+
+# How Script2Shot Came about
+
+Script2Shot came about when we - Heaps Entertaiment - were planning an upcoming CGI series, found that sourcing a free, simple shotlist tool - that didn't rely on AI - was not easy to find or access. So, we decided to experiment and create our own tool to improve our existing workflow or relying on Microsoft Excel templates.
+We hope this tool is as useful for you as it is for us!
+
+![App Screenshot](assets\HeapsEntertainmentWide.svg)
