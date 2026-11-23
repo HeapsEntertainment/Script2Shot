@@ -32,7 +32,7 @@ Script2Shot automatically adjusts based on any project format, from live action 
 Script2Shot eliminates the guesswork by automatically adjusting shot lenses based on project format and shot size/type, making projects easier for indie creators and saving time for professionals whilst still supporting individual lens adjustments to each shot if required.
 
 ## Further Documetaion
-Script2Shot has extensive documentation, which can be accessed in-app. Furher/additoional documentation can be found on the github wiki.
+Script2Shot has extensive documentation, which can be accessed in-app. Further/additoional documentation can be found on the github wiki.
 
 # How to Get Started
 Script2Shot is designed to be easy and intuative to use, with many automatic features. It is also fully documented in-app, with tutorial guides and epxlanations for every setting. You might even be reading this within the app.
