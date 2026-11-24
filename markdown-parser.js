@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/HeapsEntertainment/Script2Shot/main/';
+
   function escapeHTML(str) {
     return String(str == null ? '' : str)
       .replace(/&/g, '&amp;')
@@ -9,12 +11,32 @@
       .replace(/"/g, '&quot;');
   }
 
+  function escapeAttr(str) {
+    return escapeHTML(str).replace(/'/g, '&#39;');
+  }
+
   function formatInlineMarkdown(text) {
     return escapeHTML(text)
       // Parse Markdown Images: ![Alt text](url) or ![Alt text](<url>)
       .replace(/!\[([^\]]*?)\]\(<?([^)>]+?)>?\)/g, function (_match, alt, src) {
         var cleanSrc = src.trim().replace(/&amp;/g, '&');
-        return "<img src='" + cleanSrc + "' alt='" + alt + "' class='max-w-full h-auto rounded-lg my-3 border border-studio-700 shadow-md mx-auto block' />";
+        var isExternal = /^(https?:\/\/|data:|blob:)/i.test(cleanSrc);
+
+        // Normalize relative paths like "./assets/pic.png" or "../assets/pic.png" -> "assets/pic.png"
+        var normalizedPath = cleanSrc
+          .replace(/^(?:\.\/|\.\.\/)+/, '')
+          .replace(/^\/+/, '');
+
+        var fallbackUrl = GITHUB_RAW_BASE + normalizedPath;
+        var safeAlt = escapeAttr(alt);
+        var safeSrc = escapeAttr(cleanSrc);
+        var safeFallback = escapeAttr(fallbackUrl);
+
+        var onErrorAttr = isExternal
+          ? ''
+          : " onerror=\"if(!this.dataset.fb){this.dataset.fb='1';this.src='" + safeFallback + "';}\"";
+
+        return "<img src='" + safeSrc + "' alt='" + safeAlt + "'" + onErrorAttr + " class='max-w-full h-auto rounded-lg my-3 border border-studio-700 shadow-md mx-auto block' />";
       })
       .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
       .replace(/__(.*?)__/g, '<strong class="text-white font-semibold">$1</strong>')

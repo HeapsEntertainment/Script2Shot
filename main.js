@@ -93,35 +93,52 @@ async function syncDocsFromGitHub() {
   }
 }
 
-async function checkForUpdate(parentWindow) {
-  if (!app.isPackaged) return;
-
+async function getAvailableUpdate() {
   try {
-    const remote = await fetchJson(REMOTE_VERSION_URL);
-    if (!remote.lastUpdated || remote.lastUpdated === buildInfo.lastUpdated) {
-      return;
+    const remote = await fetchJson(`${REMOTE_VERSION_URL}?t=${Date.now()}`);
+    const versionChanged = Boolean(remote.version && remote.version !== buildInfo.version);
+    const dateChanged = Boolean(remote.lastUpdated && remote.lastUpdated !== buildInfo.lastUpdated);
+
+    if (!versionChanged && !dateChanged) {
+      return { available: false };
     }
 
-    const result = await dialog.showMessageBox(parentWindow, {
-      type: 'info',
-      title: 'Update Available',
-      message: `A newer Script2Shot build (${remote.lastUpdated}) is available.`,
-      detail: remote.notes || 'Download and run the installer now?',
-      buttons: ['Update Now', 'Later'],
-      defaultId: 0,
-      cancelId: 1
-    });
-
-    if (result.response !== 0 || !remote.installerUrl) return;
-
-    const installerPath = path.join(app.getPath('temp'), 'Script2Shot-Update.exe');
-    await downloadFile(remote.installerUrl, installerPath);
-    await shell.openPath(installerPath);
-    app.quit();
+    return {
+      available: true,
+      versionChanged,
+      dateChanged,
+      version: remote.version || buildInfo.version,
+      lastUpdated: remote.lastUpdated || buildInfo.lastUpdated,
+      notes: remote.notes || '',
+      installerUrl: remote.installerUrl || ''
+    };
   } catch (err) {
     console.warn('Update check skipped:', err.message);
+    return { available: false };
   }
 }
+
+ipcMain.handle('update:check', async () => {
+  return await getAvailableUpdate();
+});
+
+ipcMain.handle('update:install', async (_event, installerUrl) => {
+  if (!installerUrl) {
+    return { ok: false, error: 'No installer URL provided in version.json.' };
+  }
+  try {
+    const installerPath = path.join(app.getPath('temp'), 'Script2Shot-Update.exe');
+    await downloadFile(installerUrl, installerPath);
+    const openError = await shell.openPath(installerPath);
+    if (openError) {
+      return { ok: false, error: openError };
+    }
+    setTimeout(() => app.quit(), 400);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -340,14 +357,12 @@ ipcMain.handle('dialog:export-stripboard-csv', async (event, exportData) => {
 });
 
 app.whenReady().then(() => {
-  const mainWindow = createWindow();
-  checkForUpdate(mainWindow);
+  createWindow();
   syncDocsFromGitHub();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      const win = createWindow();
-      checkForUpdate(win);
+      createWindow();
     }
   });
 });
